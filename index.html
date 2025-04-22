@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Canvas</title>
+  <link rel="icon" type="image/x-icon" href="URL-to-the-icon">
+  <style>
+    body {
+      margin: 0;
+      background: black;
+    }
+    canvas {
+      display: block;
+      margin: auto;
+      background: #111;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="gameCanvas" width="800" height="500"></canvas>
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    const paddleHeight = 100;
+    const paddleWidth = 10;
+    const player1 = { x: 10, y: canvas.height / 2 - paddleHeight / 2, dy: 0 };
+    const player2 = { x: canvas.width - 20, y: canvas.height / 2 - paddleHeight / 2, dy: 0 };
+    const ball = { x: canvas.width / 2, y: canvas.height / 2, radius: 10, dx: 5, dy: 3 };
+
+    function drawRect(x, y, w, h, color) {
+      ctx.fillStyle = color;
+      ctx.fillRect(x, y, w, h);
+    }
+
+    function drawCircle(x, y, r, color) {
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      drawRect(player1.x, player1.y, paddleWidth, paddleHeight, 'white');
+      drawRect(player2.x, player2.y, paddleWidth, paddleHeight, 'white');
+      drawCircle(ball.x, ball.y, ball.radius, 'white');
+    }
+
+    function update() {
+      player1.y += player1.dy;
+      player2.y += player2.dy;
+
+      // Prevent paddles from going out of bounds
+      player1.y = Math.max(0, Math.min(canvas.height - paddleHeight, player1.y));
+      player2.y = Math.max(0, Math.min(canvas.height - paddleHeight, player2.y));
+
+      // Ball movement
+      ball.x += ball.dx;
+      ball.y += ball.dy;
+
+      // Ball collision with top and bottom
+      if (ball.y <= 0 || ball.y >= canvas.height) {
+        ball.dy *= -1;
+      }
+
+      // Ball collision with paddles
+      if (
+        ball.x - ball.radius <= player1.x + paddleWidth &&
+        ball.y >= player1.y &&
+        ball.y <= player1.y + paddleHeight
+      ) {
+        ball.dx *= -1;
+      }
+      if (
+        ball.x + ball.radius >= player2.x &&
+        ball.y >= player2.y &&
+        ball.y <= player2.y + paddleHeight
+      ) {
+        ball.dx *= -1;
+      }
+
+      // Reset ball if it goes off screen
+      if (ball.x < 0 || ball.x > canvas.width) {
+        ball.x = canvas.width / 2;
+        ball.y = canvas.height / 2;
+        ball.dx *= -1;
+      }
+    }
+
+    function loop() {
+      update();
+      draw();
+      requestAnimationFrame(loop);
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'w') player1.dy = -5;
+      if (e.key === 's') player1.dy = 5;
+      if (e.key === 'ArrowUp') player2.dy = -5;
+      if (e.key === 'ArrowDown') player2.dy = 5;
+    });
+
+    document.addEventListener('keyup', (e) => {
+      if (e.key === 'w' || e.key === 's') player1.dy = 0;
+      if (e.key === 'ArrowUp' || e.key === 'ArrowDown') player2.dy = 0;
+    });
+
+    loop();
+  </script>
+</body>
+</html>
