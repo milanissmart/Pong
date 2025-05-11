@@ -22,8 +22,8 @@
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
 
-    const paddleHeight = 1000;
-    const paddleWidth = 10;
+    const paddleHeight = 10;
+    const paddleWidth = 1;
     const player1 = { x: 10, y: canvas.height / 2 - paddleHeight / 2, dy: 0 };
     const player2 = { x: canvas.width - 20, y: canvas.height / 2 - paddleHeight / 2, dy: 0 };
     const ball = { x: canvas.width / 2, y: canvas.height / 2, radius: 10, dx: 5, dy: 3 };
